@@ -45,7 +45,7 @@
     ```
     * 资源
     ```javascript
-		<style type="text/css">
+	<style type="text/css">
             body,html{margin: 0;padding: 0;}
             #playerDom{width: 640px;height: 360px;margin: 50px auto;}
             #playerDom2{width: 640px;height: 360px;margin: 50px auto;}
@@ -61,7 +61,7 @@
     ```
     * js
     ```javascript
-    	new xwPlayer({
+	new xwPlayer({
             container: '', // 节点ID 必填*
             title: '', // title 
             type: '',  // 播放器类型 video audio 必填*
