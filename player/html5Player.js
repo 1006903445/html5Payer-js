@@ -107,7 +107,7 @@ xwPlayer.prototype.videoDom = function(){
     }
     self.palyerBox = document.getElementById(DEFAULT.container);
     var loop = DEFAULT.loop ? 'loop' : '';
-    var wxx5 = self.isWeixin() ? `x5-video-player-type="h5" x5-video-player-fullscreen="true"` : '';
+    var wxx5 = self.isWeixin() ? `x5-video-player-type="h5" x5-video-player-fullscreen="false"` : '';
     var player = '';
     var full = '';
     var title = DEFAULT.title;
