@@ -489,6 +489,9 @@ xwPlayer.prototype.audioAnimation = function(){
     var xwH5PlayerBox = self.xwH5PlayerBox;
     var p = xwH5PlayerBox.clientWidth*3 / 640;
     var atx = new AudioContext();
+    atx.resume().then(() => {
+        console.log('Playback resumed successfully');
+    });
     var analyser = atx.createAnalyser();
     var audioSrc = atx.createMediaElementSource(audio);
     // we have to connect the MediaElementSource with the analyser
