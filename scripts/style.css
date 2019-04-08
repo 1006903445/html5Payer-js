@@ -1,0 +1,19 @@
+body,html{margin: 0;padding: 0;}
+#playerDom-box{
+	position: relative;
+	width: 100%; 
+	max-width: 640px;
+	margin: 50px auto;
+}
+.box{
+	position: relative;
+	padding-top: calc(9 / 16 * 100%);
+	height: 0;
+}
+#playerDom,#playerDom2{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
