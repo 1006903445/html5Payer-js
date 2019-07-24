@@ -2,8 +2,10 @@
 .xwH5PlayerBox{width: 100%;height: 100%;position: relative;background-color:#000000;background-repeat: no-repeat;background-position: center center;background-size: 100% auto;}
 .xwH5PlayerBox .xwH5Player-video-audio{position:relative;width: 100%;height: 100%;}
 .xwH5PlayerBox video{position: absolute;top: 0;left: 0;width: 100%;height: 100%;}
-.xwH5PlayerBox audio{position: absolute;top: 0;left: 0;display:none}
+.xwH5PlayerBox audio{position: absolute;top: 0;left: 0;display:none;}
 .xwH5PlayerBox canvas{display: none;width: 100%;height: 100%;}
+.xwH5PlayerBox .xwH5Player-barrage-box{position: absolute;top:0;bottom: 0;left: 0;right: 0;width: 100%;height: 100%;overflow: hidden;cursor: pointer;}
+.xwH5PlayerBox .xwH5Player-barrage-box .xwH5Player-barrage-item{position: absolute;left: 100%;top: 0;display: inline-block;line-height: 1;font-size: 16px;color: #fff;font-family: '微软雅黑';white-space: nowrap;}
 .xwH5PlayerBox .xwH5Player-controls-box{position: absolute;top:0;bottom: 0;left: 0;right: 0;width: 100%;height: 100%;overflow: hidden;cursor: pointer;}
 .xwH5PlayerBox .xwH5Player-left-box{position: absolute;top: 0;bottom: 0;left: -80px;height: 100%;width: 80px;}
 .xwH5PlayerBox .xwH5Player-right-box{position: absolute;top: 0;bottom: 0;right: -80px;height: 100%;width: 80px;}
@@ -69,8 +71,8 @@
 .xwH5PlayerBox .xwH5Player-controls .xwH5Player-audio.z-mute .xwH5Player-audio-v{display: none;}
 .xwH5PlayerBox .xwH5Player-controls .xwH5Player-audio.z-mute .xwH5Player-audio-mute{display: block;}
 .xwH5PlayerBox .xwH5Player-controls .xwH5Player-audio .xwH5Player-progress-audio-box{display: none;position: absolute;bottom: 20px;left: 5px;width: 20px;padding: 2px 2px 10px 2px;}
-.xwH5PlayerBox .xwH5Player-controls .xwH5Player-audio .xwH5Player-progress-audio{position: relative;width: 100%;height: 100%;}
-.xwH5PlayerBox .xwH5Player-controls .xwH5Player-audio .xwH5Player-progress-audio-bar{width: 100%;height:4px;margin-top:2px;background-color:#333;-webkit-transition: all 0.3s;transition: all 0.3s;}
+.xwH5PlayerBox .xwH5Player-controls .xwH5Player-audio .xwH5Player-progress-audio{position: relative;width: 100%;height: 100%;cursor: pointer;}
+.xwH5PlayerBox .xwH5Player-controls .xwH5Player-audio .xwH5Player-progress-audio-bar{width: 100%;height:4px;margin-top:2px;background-color:#333;-webkit-transition: all 0.3s;transition: all 0.3s;cursor: pointer;}
 .xwH5PlayerBox .xwH5Player-controls .xwH5Player-audio .xwH5Player-progress-audio-bar:hover{width:150%;background-color:#fff;}
 .xwH5PlayerBox .xwH5Player-controls .xwH5Player-audio .xwH5Player-progress-audio-bar.z-open{background-color:#fff}
 .xwH5PlayerBox .xwH5Player-controls .xwH5Player-audio:hover .xwH5Player-progress-audio-box{display: block;}

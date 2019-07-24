@@ -11,6 +11,7 @@ var xwPlayer = function(obj){
         status: 0 //1 直播 点播
     }
     this.HLS = null;
+    this.AudioContext = null;
     this.mouseXY = {is:false,x:null,y:null};
     this.xwH5PlayerMove = false;
 
@@ -18,6 +19,7 @@ var xwPlayer = function(obj){
     this.palyerBox = null;
     this.xwH5PlayerBox = null;
     this.xwH5Player = null; //video audio 标签
+    this.xwH5PlayerBarrageBox = null;
     this.xwH5PlayerControls = null;
     this.xwH5PlayerDuration = null;
     this.xwH5PlayerCurrentTime = null;
@@ -32,14 +34,6 @@ var xwPlayer = function(obj){
         if(/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
             return true;
         } else {
-            return false;
-        }
-    };
-    this.isWeixin = function(){ // 是否微信端
-        var u = navigator.userAgent.toLowerCase();
-        if(!!u.match(/MicroMessenger/i)){
-            return true;
-        }else{
             return false;
         }
     };
@@ -107,12 +101,11 @@ xwPlayer.prototype.videoDom = function(){
     }
     self.palyerBox = document.getElementById(DEFAULT.container);
     var loop = DEFAULT.loop ? 'loop' : '';
-    var wxx5 = self.isWeixin() ? `x5-video-player-type="h5" x5-video-player-fullscreen="false"` : '';
     var player = '';
     var full = '';
     var title = DEFAULT.title;
     if(DEFAULT.type == 'video'){
-        player = `<video class="xwH5Player" src="${DEFAULT.src}" ${wxx5} width="100%" height="100%" ${loop} preload="${DEFAULT.preload}" poster="${DEFAULT.poster}">
+        player = `<video class="xwH5Player" src="${DEFAULT.src}" width="100%" height="100%" ${loop} preload="${DEFAULT.preload}" poster="${DEFAULT.poster}">
             您的浏览器不支持video标签
         </video>`;
         full = `style="display:block"`;
@@ -127,6 +120,7 @@ xwPlayer.prototype.videoDom = function(){
                 ${player}
                 <canvas width="1280" height="720"></canvas>
             </div>
+            <div class="xwH5Player-barrage-box"></div>
             <div class="xwH5Player-controls-box">
                 <div class="xwH5Player-top-box">
                     <div class="xwH5Player-title">${title}</div>
@@ -188,6 +182,7 @@ xwPlayer.prototype.videoDom = function(){
     self.xwH5PlayerBox = self.palyerBox.querySelector('.xwH5PlayerBox');
     self.xwH5Player = self.palyerBox.querySelector('.xwH5Player');
     self.xwH5PlayerCanvas = self.palyerBox.querySelector('canvas');
+    self.xwH5PlayerBarrageBox = self.palyerBox.querySelector('.xwH5Player-barrage-box');
     self.xwH5PlayerControls = self.palyerBox.querySelector('.xwH5Player-controls');
     self.xwH5PlayerDuration = self.palyerBox.querySelector('.xwH5Player-duration');
     self.xwH5PlayerCurrentTime = self.palyerBox.querySelector('.xwH5Player-currentTime');
@@ -199,7 +194,6 @@ xwPlayer.prototype.videoDom = function(){
     self.xwH5PlayerProgressAudioBar = self.palyerBox.getElementsByClassName('xwH5Player-progress-audio-bar');
     self.playerCallback();
     if(self.getStyle(self.xwH5Player).display == 'none'){
-        self.audioAnimation();
         self.xwH5PlayerCanvas.style.display = 'block';
     }else{
         self.xwH5PlayerCanvas.style.display = 'none';
@@ -212,8 +206,6 @@ xwPlayer.prototype.videoDom = function(){
             }
             self.HLS.loadSource(DEFAULT.src);
             self.HLS.attachMedia(self.xwH5Player);
-        }else{
-            alert('浏览器不支持.m3u8格式的视频');
         }
     }
     if(DEFAULT.autoplay){
@@ -258,6 +250,7 @@ xwPlayer.prototype.playerCallback = function(){
     }
     self.xwH5Player.onplaying = function(){
         self.togglePlay('play');
+        self.audioAnimation();
         // console.log('开始播放')
     }
     self.xwH5Player.onratechange = function(){
@@ -353,8 +346,6 @@ xwPlayer.prototype.changePlayer = function(src,liveStatus){
             self.HLS = new Hls();
             self.HLS.loadSource(src);
             self.HLS.attachMedia(self.xwH5Player);
-        }else{
-            alert('浏览器不支持.m3u8格式的视频');
         }
     }
     self.togglePlay('pause')
@@ -362,6 +353,26 @@ xwPlayer.prototype.changePlayer = function(src,liveStatus){
         self.xwH5Player.play();
     }
 };
+// 弹幕
+xwPlayer.prototype.sendbarrage = function(str="", size=16, color="#FFFFFF", speed=1000, font='微软雅黑'){
+    var self = this;
+    let div = document.createElement("div");
+    div.className = 'xwH5Player-barrage-item';
+    div.innerHTML = str;
+    self.xwH5PlayerBarrageBox.appendChild(div);
+    let boxH = self.xwH5PlayerBarrageBox.clientHeight
+    let h = div.clientHeight || 0;
+    let w = div.clientWidth || 0;
+    div.style.top = `${Math.random()*(boxH - h)}px`; 
+    div.style.fontSize = `${size}px`;
+    div.style.fontFamily = font;
+    // 如果存在兼容性问题  web-animations.js
+    div.animate([
+        {'left': `100%`},
+        {'left': `-${w}px`},
+    ], speed);
+    setTimeout(() => {div.parentNode.removeChild(div);}, speed)
+}
 // 替换背景图片
 xwPlayer.prototype.changePoster = function(img){
     var self = this;
@@ -389,7 +400,6 @@ xwPlayer.prototype.BindingEvent = function(){
         self.fullScreen()
     }
 }
-
 // 播放进度控制
 xwPlayer.prototype.playProgress = function(){
     var self = this;
@@ -454,16 +464,6 @@ xwPlayer.prototype.playProgress = function(){
     self.xwH5PlayerBox.addEventListener('touchstart',startBar, false);
     self.xwH5PlayerBox.addEventListener('touchmove',moveBar, false);
     self.xwH5PlayerBox.addEventListener('touchend',leaveBox, false);
-    
-    // self.xwH5PlayerProgress.onclick = jumpPlaye;
-    // self.xwH5PlayerProgress.onmousedown = startBar;
-    // self.xwH5PlayerBox.onmousemove = moveBar;
-    // self.xwH5PlayerBox.onmouseleave = leaveBox;
-    // self.xwH5PlayerBox.onmouseup = leaveBox;
-    // self.xwH5PlayerProgress.onmouseup = leaveBox;
-    // self.xwH5PlayerBox.ontouchstart = startBar;
-    // self.xwH5PlayerBox.ontouchmove = moveBar;
-    // self.xwH5PlayerBox.ontouchend = leaveBox;
 }
 // 音量
 xwPlayer.prototype.audioProgress = function(){
@@ -488,10 +488,11 @@ xwPlayer.prototype.audioAnimation = function(){
     var canvas = self.xwH5PlayerCanvas;
     var xwH5PlayerBox = self.xwH5PlayerBox;
     var p = xwH5PlayerBox.clientWidth*3 / 640;
+    if(self.AudioContext){
+        return false;
+    }
     var atx = new AudioContext();
-    atx.resume().then(() => {
-        console.log('Playback resumed successfully');
-    });
+    self.AudioContext = atx;
     var analyser = atx.createAnalyser();
     var audioSrc = atx.createMediaElementSource(audio);
     // we have to connect the MediaElementSource with the analyser
@@ -543,4 +544,4 @@ xwPlayer.prototype.audioAnimation = function(){
     }
     renderFrame();
 }
-// export default xwPlayer;
+export default xwPlayer;
