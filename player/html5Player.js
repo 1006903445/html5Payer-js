@@ -1,121 +1,129 @@
 window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
-var xwPlayer = function(obj){
-    var defaultObj = {
-        container: '', //id
-        type: 'video',
-        autoplay: false, //自动播放
-        loop: false, //是否循环播放
-        preload: 'meta', //是否预加载
-        src: '', //视频地址
-        poster: '', //海报图
-        status: 0 //1 直播 点播
-    }
-    this.HLS = null;
-    this.AudioContext = null;
-    this.mouseXY = {is:false,x:null,y:null};
-    this.xwH5PlayerMove = false;
+var xwPlayer = function (obj) {
+  var defaultObj = {
+    container: '', //id
+    type: 'video',
+    autoplay: false, //自动播放
+    loop: false, //是否循环播放
+    preload: 'meta', //是否预加载
+    src: '', //视频地址
+    poster: '', //海报图
+    status: 0 //1 直播 点播
+  };
+  this.HLS = null;
+  this.AudioContext = null;
+  this.mouseXY = { is: false, x: null, y: null };
+  this.xwH5PlayerMove = false;
 
-    this.DEFAULT = Object.assign(defaultObj,obj);
-    this.palyerBox = null;
-    this.xwH5PlayerBox = null;
-    this.xwH5Player = null; //video audio 标签
-    this.xwH5PlayerBarrageBox = null;
-    this.xwH5PlayerControls = null;
-    this.xwH5PlayerDuration = null;
-    this.xwH5PlayerCurrentTime = null;
-    this.xwH5PlayerProgressBox= null;
-    this.xwH5PlayerProgress= null;
-    this.xwH5PlayerProgressBar = null;
-    this.xwH5PlayerAudio = null;
-    this.xwH5PlayerProgressAudio = null;
-    this.xwH5PlayerProgressAudioBar = null;
+  this.DEFAULT = Object.assign(defaultObj, obj);
+  this.palyerBox = null;
+  this.xwH5PlayerBox = null;
+  this.xwH5Player = null; //video audio 标签
+  this.xwH5PlayerBarrageBox = null;
+  this.xwH5PlayerControls = null;
+  this.xwH5PlayerDuration = null;
+  this.xwH5PlayerCurrentTime = null;
+  this.xwH5PlayerProgressBox = null;
+  this.xwH5PlayerProgress = null;
+  this.xwH5PlayerProgressBar = null;
+  this.xwH5PlayerAudio = null;
+  this.xwH5PlayerProgressAudio = null;
+  this.xwH5PlayerProgressAudioBar = null;
 
-    this.isMobile = function(){ // 是否手机端
-        if(/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
-            return true;
-        } else {
-            return false;
-        }
-    };
-    this.formatTime = function(timestamp){ //格式化时间
-        if(!timestamp || typeof(timestamp) == 'undefined'){
-            return '';
-        }
-        timestamp = parseInt(timestamp);
-        var H = parseInt(timestamp/60/60);
-        var m = parseInt(timestamp/60%60) >= 10 ? parseInt(timestamp/60%60) : '0'+parseInt(timestamp/60%60);
-        var s = parseInt(timestamp%60%60) >= 10 ? parseInt(timestamp%60%60) : '0'+parseInt(timestamp%60%60);
-        if(H <= 0){
-            return m + ':' + s;
-        }else{
-            return H + ':' + m + ':' + s;
-        }
-    };
-    this.getStyle = function(el){
-        return window.getComputedStyle(el);
+  this.isMobile = function () {
+    // 是否手机端
+    if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+      return true;
+    } else {
+      return false;
     }
-    this.formatVolume = function(v){
-        if(v == 1){
-            v = 1;
-        }else if(v < 1 && v >= 0.9){
-            v = 0.9;
-        }else if(v < 0.9 && v >= 0.8){
-            v = 0.8;
-        }else if(v < 0.8 && v >= 0.7){
-            v = 0.7;
-        }else if(v < 0.7 && v >= 0.6){
-            v = 0.6;
-        }else if(v < 0.6 && v >= 0.5){
-            v = 0.5;
-        }else if(v < 0.5 && v >= 0.4){
-            v = 0.4;
-        }else if(v < 0.4 && v >= 0.3){
-            v = 0.3;
-        }else if(v < 0.3 && v >= 0.2){
-            v = 0.2;
-        }else if(v < 0.2 && v >= 0.1){
-            v = 0.1;
-        }else if(v < 0.1 && v >= 0){
-            v = 0;
-        }else{
-            v = 0;
-        }
-        return v;
-    };
-    this.init();
+  };
+  this.formatTime = function (timestamp) {
+    //格式化时间
+    if (!timestamp || typeof timestamp == 'undefined') {
+      return '';
+    }
+    timestamp = parseInt(timestamp);
+    var H = parseInt(timestamp / 60 / 60);
+    var m =
+      parseInt((timestamp / 60) % 60) >= 10
+        ? parseInt((timestamp / 60) % 60)
+        : '0' + parseInt((timestamp / 60) % 60);
+    var s =
+      parseInt((timestamp % 60) % 60) >= 10
+        ? parseInt((timestamp % 60) % 60)
+        : '0' + parseInt((timestamp % 60) % 60);
+    if (H <= 0) {
+      return m + ':' + s;
+    } else {
+      return H + ':' + m + ':' + s;
+    }
+  };
+  this.getStyle = function (el) {
+    return window.getComputedStyle(el);
+  };
+  this.formatVolume = function (v) {
+    if (v == 1) {
+      v = 1;
+    } else if (v < 1 && v >= 0.9) {
+      v = 0.9;
+    } else if (v < 0.9 && v >= 0.8) {
+      v = 0.8;
+    } else if (v < 0.8 && v >= 0.7) {
+      v = 0.7;
+    } else if (v < 0.7 && v >= 0.6) {
+      v = 0.6;
+    } else if (v < 0.6 && v >= 0.5) {
+      v = 0.5;
+    } else if (v < 0.5 && v >= 0.4) {
+      v = 0.4;
+    } else if (v < 0.4 && v >= 0.3) {
+      v = 0.3;
+    } else if (v < 0.3 && v >= 0.2) {
+      v = 0.2;
+    } else if (v < 0.2 && v >= 0.1) {
+      v = 0.1;
+    } else if (v < 0.1 && v >= 0) {
+      v = 0;
+    } else {
+      v = 0;
+    }
+    return v;
+  };
+  this.init();
 };
 // 初始化
-xwPlayer.prototype.init = function(){
-    var self = this;
-    self.videoDom();
-    self.BindingEvent();
-    self.playProgress();
-    self.audioProgress();
+xwPlayer.prototype.init = function () {
+  var self = this;
+  self.videoDom();
+  self.BindingEvent();
+  self.playProgress();
+  self.audioProgress();
 };
 // dom渲染
-xwPlayer.prototype.videoDom = function(){
-    var self = this;
-    var DEFAULT = self.DEFAULT;
-    if(!DEFAULT.container || DEFAULT.container == ''){
-        throw new Error('argument "container" is required !');
-    }
-    self.palyerBox = document.getElementById(DEFAULT.container);
-    var loop = DEFAULT.loop ? 'loop' : '';
-    var player = '';
-    var full = '';
-    var title = DEFAULT.title;
-    if(DEFAULT.type == 'video'){
-        player = `<video class="xwH5Player" src="${DEFAULT.src}" width="100%" height="100%" ${loop} preload="${DEFAULT.preload}" poster="${DEFAULT.poster}">
+xwPlayer.prototype.videoDom = function () {
+  var self = this;
+  var DEFAULT = self.DEFAULT;
+  if (!DEFAULT.container || DEFAULT.container == '') {
+    throw new Error('argument "container" is required !');
+  }
+  self.palyerBox = document.getElementById(DEFAULT.container);
+  var loop = DEFAULT.loop ? 'loop' : '';
+  var player = '';
+  var full = '';
+  var title = DEFAULT.title;
+  if (DEFAULT.type == 'video') {
+    player = `<video class="xwH5Player" src="${DEFAULT.src}" width="100%" height="100%" ${loop} preload="${DEFAULT.preload}" poster="${DEFAULT.poster}">
             您的浏览器不支持video标签
         </video>`;
-        full = `style="display:block"`;
-    }else if(DEFAULT.type == 'audio'){
-        player = `<audio class="xwH5Player" src="${DEFAULT.src}" width="100%" height="100%" ${loop} preload="${DEFAULT.preload}" poster="${DEFAULT.poster}">
+    full = `style="display:block"`;
+  } else if (DEFAULT.type == 'audio') {
+    player = `<audio class="xwH5Player" src="${DEFAULT.src}" width="100%" height="100%" ${loop} preload="${DEFAULT.preload}" poster="${DEFAULT.poster}">
             您的浏览器不支持audio标签
         </audio>`;
-        full = `style="display:none"`;
-    }
-    var playerHtml = `<div class="xwH5PlayerBox" style="background-image: url(${DEFAULT.poster})">
+    full = `style="display:none"`;
+  }
+  var playerHtml = `<div class="xwH5PlayerBox" style="background-image: url(${DEFAULT.poster})">
             <div class="xwH5Player-video-audio">
                 ${player}
                 <canvas width="1280" height="720"></canvas>
@@ -178,370 +186,386 @@ xwPlayer.prototype.videoDom = function(){
                 </div>
             </div>
         </div>`;
-    self.palyerBox.innerHTML = playerHtml;
-    self.xwH5PlayerBox = self.palyerBox.querySelector('.xwH5PlayerBox');
-    self.xwH5Player = self.palyerBox.querySelector('.xwH5Player');
-    self.xwH5PlayerCanvas = self.palyerBox.querySelector('canvas');
-    self.xwH5PlayerBarrageBox = self.palyerBox.querySelector('.xwH5Player-barrage-box');
-    self.xwH5PlayerControls = self.palyerBox.querySelector('.xwH5Player-controls');
-    self.xwH5PlayerDuration = self.palyerBox.querySelector('.xwH5Player-duration');
-    self.xwH5PlayerCurrentTime = self.palyerBox.querySelector('.xwH5Player-currentTime');
-    self.xwH5PlayerProgressBox = self.palyerBox.querySelector('.xwH5Player-progress-box');
-    self.xwH5PlayerProgress = self.palyerBox.querySelector('.xwH5Player-progress');
-    self.xwH5PlayerProgressBar = self.palyerBox.querySelector('.xwH5Player-progress-bar');
-    self.xwH5PlayerAudio = self.palyerBox.querySelector('.xwH5Player-audio');
-    self.xwH5PlayerProgressAudio = self.palyerBox.querySelector('.xwH5Player-progress-audio');
-    self.xwH5PlayerProgressAudioBar = self.palyerBox.getElementsByClassName('xwH5Player-progress-audio-bar');
-    self.playerCallback();
-    if(self.getStyle(self.xwH5Player).display == 'none'){
-        self.xwH5PlayerCanvas.style.display = 'block';
-    }else{
-        self.xwH5PlayerCanvas.style.display = 'none';
+  self.palyerBox.innerHTML = playerHtml;
+  self.xwH5PlayerBox = self.palyerBox.querySelector('.xwH5PlayerBox');
+  self.xwH5Player = self.palyerBox.querySelector('.xwH5Player');
+  self.xwH5PlayerCanvas = self.palyerBox.querySelector('canvas');
+  self.xwH5PlayerBarrageBox = self.palyerBox.querySelector('.xwH5Player-barrage-box');
+  self.xwH5PlayerControls = self.palyerBox.querySelector('.xwH5Player-controls');
+  self.xwH5PlayerDuration = self.palyerBox.querySelector('.xwH5Player-duration');
+  self.xwH5PlayerCurrentTime = self.palyerBox.querySelector('.xwH5Player-currentTime');
+  self.xwH5PlayerProgressBox = self.palyerBox.querySelector('.xwH5Player-progress-box');
+  self.xwH5PlayerProgress = self.palyerBox.querySelector('.xwH5Player-progress');
+  self.xwH5PlayerProgressBar = self.palyerBox.querySelector('.xwH5Player-progress-bar');
+  self.xwH5PlayerAudio = self.palyerBox.querySelector('.xwH5Player-audio');
+  self.xwH5PlayerProgressAudio = self.palyerBox.querySelector('.xwH5Player-progress-audio');
+  self.xwH5PlayerProgressAudioBar = self.palyerBox.getElementsByClassName(
+    'xwH5Player-progress-audio-bar'
+  );
+  self.playerCallback();
+  if (self.getStyle(self.xwH5Player).display == 'none') {
+    self.xwH5PlayerCanvas.style.display = 'block';
+  } else {
+    self.xwH5PlayerCanvas.style.display = 'none';
+  }
+  if (DEFAULT.src.indexOf('.m3u8') != -1) {
+    var Hls = window.Hls;
+    if (Hls.isSupported()) {
+      if (!self.HLS) {
+        self.HLS = new Hls();
+      }
+      self.HLS.loadSource(DEFAULT.src);
+      self.HLS.attachMedia(self.xwH5Player);
     }
-    if(DEFAULT.src.indexOf('.m3u8') != -1){
-        var Hls = window.Hls;
-        if(Hls.isSupported()) {
-            if(!self.HLS){
-                self.HLS = new Hls();
-            }
-            self.HLS.loadSource(DEFAULT.src);
-            self.HLS.attachMedia(self.xwH5Player);
-        }
-    }
-    if(DEFAULT.autoplay){
-        self.xwH5Player.play();
-    }
+  }
+  if (DEFAULT.autoplay) {
+    self.xwH5Player.play();
+  }
 };
 // 标签回调
-xwPlayer.prototype.playerCallback = function(){
-    var self = this;
-    self.xwH5Player.onerror  = function(){
-
+xwPlayer.prototype.playerCallback = function () {
+  var self = this;
+  self.xwH5Player.onerror = function () {};
+  self.xwH5Player.onemptied = function () {
+    // console.log('资源错误')
+  };
+  self.xwH5Player.onloadstart = function () {
+    // console.log('资源开始加载')
+  };
+  self.xwH5Player.onprogress = function () {
+    // console.log('资源加载')
+  };
+  self.xwH5Player.ondurationchange = function () {
+    // console.log('改变资源')
+  };
+  self.xwH5Player.onloadedmetadata = function () {
+    // console.log('资源加载完')
+  };
+  self.xwH5Player.onloadeddata = function () {
+    self.timeupdate(this.currentTime, this.duration);
+    self.volumechange(100 - parseInt(this.volume * 100));
+    // console.log('加载完当前帧播放就绪')
+  };
+  self.xwH5Player.onended = function () {
+    // console.log('播放结束')
+  };
+  self.xwH5Player.onpause = function () {
+    self.togglePlay('pause');
+    // console.log('停止播放')
+  };
+  self.xwH5Player.onplay = function () {
+    // console.log('准备开始播放')
+  };
+  self.xwH5Player.onplaying = function () {
+    self.togglePlay('play');
+    self.audioAnimation();
+    // console.log('开始播放')
+  };
+  self.xwH5Player.onratechange = function () {
+    // console.log('改变播放速度',this.playbackRate)
+  };
+  self.xwH5Player.ontimeupdate = function () {
+    // // console.log('播放当前进度' + this.currentTime, '速度' + this.playbackRate);
+    if (!self.mouseXY.x) {
+      self.timeupdate(this.currentTime, this.duration);
     }
-    self.xwH5Player.onemptied = function(){
-        // console.log('资源错误')
+  };
+  self.xwH5Player.onvolumechange = function () {
+    //音量
+    if (!self.mouseXY.y) {
+      self.volumechange(100 - parseInt(this.volume * 100));
     }
-    self.xwH5Player.onloadstart = function(){
-        // console.log('资源开始加载')
-    }
-    self.xwH5Player.onprogress = function(){
-        // console.log('资源加载')
-    }
-    self.xwH5Player.ondurationchange = function(){
-        // console.log('改变资源')
-    }
-    self.xwH5Player.onloadedmetadata = function(){
-        // console.log('资源加载完')
-    }
-    self.xwH5Player.onloadeddata = function(){
-        self.timeupdate(this.currentTime,this.duration);
-        self.volumechange(100-parseInt(this.volume*100));
-        // console.log('加载完当前帧播放就绪')
-    }
-    self.xwH5Player.onended = function(){
-        // console.log('播放结束')
-    }
-    self.xwH5Player.onpause = function(){
-        self.togglePlay('pause');
-        // console.log('停止播放')
-    }
-    self.xwH5Player.onplay = function(){
-        // console.log('准备开始播放')
-    }
-    self.xwH5Player.onplaying = function(){
-        self.togglePlay('play');
-        self.audioAnimation();
-        // console.log('开始播放')
-    }
-    self.xwH5Player.onratechange = function(){
-        // console.log('改变播放速度',this.playbackRate)
-    }
-    self.xwH5Player.ontimeupdate = function(){
-        // // console.log('播放当前进度' + this.currentTime, '速度' + this.playbackRate);
-        if(!self.mouseXY.x){
-            self.timeupdate(this.currentTime,this.duration)
-        }
-    }
-    self.xwH5Player.onvolumechange = function(){  //音量
-        if(!self.mouseXY.y){
-            self.volumechange(100-parseInt(this.volume*100));
-        }
-        // console.log('当前音量' + this.volume)
-    }
-    self.xwH5Player.oncanplay = function(){
-        // console.log('oncanplay')
-    }
-    self.xwH5Player.oncanplaythrough = function(){
-        // console.log('oncanplaythrough')
-    }
-}
+    // console.log('当前音量' + this.volume)
+  };
+  self.xwH5Player.oncanplay = function () {
+    // console.log('oncanplay')
+  };
+  self.xwH5Player.oncanplaythrough = function () {
+    // console.log('oncanplaythrough')
+  };
+};
 // 音量条
-xwPlayer.prototype.volumechange = function(v){
-    var self = this;
-    if(v == 100){
-        self.xwH5PlayerAudio.className = 'xwH5Player-audio z-mute';
-    }else{
-        self.xwH5PlayerAudio.className = 'xwH5Player-audio'
+xwPlayer.prototype.volumechange = function (v) {
+  var self = this;
+  if (v == 100) {
+    self.xwH5PlayerAudio.className = 'xwH5Player-audio z-mute';
+  } else {
+    self.xwH5PlayerAudio.className = 'xwH5Player-audio';
+  }
+  for (var i = 9; i >= 0; i--) {
+    if (i >= v / 10) {
+      self.xwH5PlayerProgressAudioBar[i].className = 'xwH5Player-progress-audio-bar z-open';
+    } else {
+      self.xwH5PlayerProgressAudioBar[i].className = 'xwH5Player-progress-audio-bar';
     }
-    for(var i = 9; i >= 0; i--){
-        if(i >= v/10){
-            self.xwH5PlayerProgressAudioBar[i].className = 'xwH5Player-progress-audio-bar z-open';
-        }else{
-            self.xwH5PlayerProgressAudioBar[i].className = 'xwH5Player-progress-audio-bar';
-        }
-    }
+  }
 };
 // 进度条 时间
-xwPlayer.prototype.timeupdate = function(nowTime,allTime){
-    var self = this;
-    var now = self.formatTime(nowTime) || '00:00';
-    var all = self.formatTime(allTime) || '00:00';
-    self.xwH5PlayerDuration.innerHTML = now;
-    self.xwH5PlayerCurrentTime.innerHTML = all;
-    if(!self.DEFAULT.status){
-        self.xwH5PlayerControls.className = 'xwH5Player-controls';
-        self.xwH5PlayerProgressBar.style.width = parseInt(nowTime/allTime*100) + '%';
-    }else{
-        self.xwH5PlayerControls.className = 'xwH5Player-controls z-hls';
-        self.xwH5PlayerProgressBar.style.width = '100%';
-    }
-}
+xwPlayer.prototype.timeupdate = function (nowTime, allTime) {
+  var self = this;
+  var now = self.formatTime(nowTime) || '00:00';
+  var all = self.formatTime(allTime) || '00:00';
+  self.xwH5PlayerDuration.innerHTML = now;
+  self.xwH5PlayerCurrentTime.innerHTML = all;
+  if (!self.DEFAULT.status) {
+    self.xwH5PlayerControls.className = 'xwH5Player-controls';
+    self.xwH5PlayerProgressBar.style.width = parseInt((nowTime / allTime) * 100) + '%';
+  } else {
+    self.xwH5PlayerControls.className = 'xwH5Player-controls z-hls';
+    self.xwH5PlayerProgressBar.style.width = '100%';
+  }
+};
 // 播放
-xwPlayer.prototype.togglePlay = function(type){
-    var self = this;
-    if(!self.xwH5Player){
-        return;
+xwPlayer.prototype.togglePlay = function (type) {
+  var self = this;
+  if (!self.xwH5Player) {
+    return;
+  }
+  if (type) {
+    if (type == 'play') {
+      self.xwH5Player.play();
+      self.xwH5PlayerBox.className = 'xwH5PlayerBox z-play';
+    } else if (type == 'pause') {
+      self.xwH5Player.pause();
+      self.xwH5PlayerBox.className = 'xwH5PlayerBox';
     }
-    if(type){
-        if(type == 'play'){
-            self.xwH5Player.play();
-            self.xwH5PlayerBox.className = 'xwH5PlayerBox z-play';
-        }else if(type == 'pause'){
-            self.xwH5Player.pause();
-            self.xwH5PlayerBox.className = 'xwH5PlayerBox';
-        }
-    }else{
-        if(self.xwH5Player.paused){
-            self.xwH5Player.play();
-            self.xwH5PlayerBox.className = 'xwH5PlayerBox z-play';
-        }else{
-            self.xwH5Player.pause();
-            self.xwH5PlayerBox.className = 'xwH5PlayerBox';
-        }
+  } else {
+    if (self.xwH5Player.paused) {
+      self.xwH5Player.play();
+      self.xwH5PlayerBox.className = 'xwH5PlayerBox z-play';
+    } else {
+      self.xwH5Player.pause();
+      self.xwH5PlayerBox.className = 'xwH5PlayerBox';
     }
+  }
 };
 
 // 替换地址
-xwPlayer.prototype.changePlayer = function(src,liveStatus){
-    var self = this;
-    if(!src || src == ''){
-        throw new Error('argument "src" is required !');
+xwPlayer.prototype.changePlayer = function (src, liveStatus) {
+  var self = this;
+  if (!src || src == '') {
+    throw new Error('argument "src" is required !');
+  }
+  self.DEFAULT.src = src;
+  self.DEFAULT.status = liveStatus;
+  self.xwH5Player.src = src;
+  if (src.indexOf('.m3u8') != -1) {
+    var Hls = window.Hls;
+    if (Hls.isSupported()) {
+      self.HLS = new Hls();
+      self.HLS.loadSource(src);
+      self.HLS.attachMedia(self.xwH5Player);
     }
-    self.DEFAULT.src= src;
-    self.DEFAULT.status= liveStatus;
-    self.xwH5Player.src = src;
-    if(src.indexOf('.m3u8') != -1){
-        var Hls = window.Hls;
-        if(Hls.isSupported()) {
-            self.HLS = new Hls();
-            self.HLS.loadSource(src);
-            self.HLS.attachMedia(self.xwH5Player);
-        }
-    }
-    self.togglePlay('pause')
-    if(self.DEFAULT.autoplay){
-        self.xwH5Player.play();
-    }
+  }
+  self.togglePlay('pause');
+  if (self.DEFAULT.autoplay) {
+    self.xwH5Player.play();
+  }
 };
 // 弹幕
-xwPlayer.prototype.sendbarrage = function(str="", size=16, color="#FFFFFF", speed=1000, font='微软雅黑'){
-    var self = this;
-    let div = document.createElement("div");
-    div.className = 'xwH5Player-barrage-item';
-    div.innerHTML = str;
-    self.xwH5PlayerBarrageBox.appendChild(div);
-    let boxH = self.xwH5PlayerBarrageBox.clientHeight
-    let h = div.clientHeight || 0;
-    let w = div.clientWidth || 0;
-    div.style.top = `${Math.random()*(boxH - h)}px`; 
-    div.style.fontSize = `${size}px`;
-    div.style.fontFamily = font;
-    // 如果存在兼容性问题  web-animations.js
-    div.animate([
-        {'left': `100%`},
-        {'left': `-${w}px`},
-    ], speed);
-    setTimeout(() => {div.parentNode.removeChild(div);}, speed)
-}
+xwPlayer.prototype.sendbarrage = function (
+  str = '',
+  size = 16,
+  color = '#FFFFFF',
+  speed = 1000,
+  font = '微软雅黑'
+) {
+  var self = this;
+  let div = document.createElement('div');
+  div.className = 'xwH5Player-barrage-item';
+  div.innerHTML = str;
+  self.xwH5PlayerBarrageBox.appendChild(div);
+  let boxH = self.xwH5PlayerBarrageBox.clientHeight;
+  let h = div.clientHeight || 0;
+  let w = div.clientWidth || 0;
+  div.style.top = `${Math.random() * (boxH - h)}px`;
+  div.style.fontSize = `${size}px`;
+  div.style.fontFamily = font;
+  // 如果存在兼容性问题  web-animations.js
+  div.animate([{ left: `100%` }, { left: `-${w}px` }], speed);
+  setTimeout(() => {
+    div.parentNode.removeChild(div);
+  }, speed);
+};
 // 替换背景图片
-xwPlayer.prototype.changePoster = function(img){
-    var self = this;
-    self.DEFAULT.poster = img;
-    self.xwH5PlayerBox.style.backgroundImage = `url(${img})`;
-    self.xwH5Player.setAttribute('poster',img)
+xwPlayer.prototype.changePoster = function (img) {
+  var self = this;
+  self.DEFAULT.poster = img;
+  self.xwH5PlayerBox.style.backgroundImage = `url(${img})`;
+  self.xwH5Player.setAttribute('poster', img);
 };
 // 全屏
-xwPlayer.prototype.fullScreen = function(){
-    console.log('全屏')
+xwPlayer.prototype.fullScreen = function () {
+  console.log('全屏');
 };
 // 事件绑定
-xwPlayer.prototype.BindingEvent = function(){
-    var self = this;
-    self.palyerBox.querySelector('.svg-play').onclick = function(){
-        self.togglePlay()
-    }
-    self.palyerBox.querySelector('.xwH5Player-play').onclick = function(){
-        self.togglePlay()
-    }
-    self.palyerBox.querySelector('.xwH5Player-pause').onclick = function(){
-        self.togglePlay()
-    }
-    self.palyerBox.querySelector('.xwH5Player-full').onclick = function(){
-        self.fullScreen()
-    }
-}
+xwPlayer.prototype.BindingEvent = function () {
+  var self = this;
+  self.palyerBox.querySelector('.svg-play').onclick = function () {
+    self.togglePlay();
+  };
+  self.palyerBox.querySelector('.xwH5Player-play').onclick = function () {
+    self.togglePlay();
+  };
+  self.palyerBox.querySelector('.xwH5Player-pause').onclick = function () {
+    self.togglePlay();
+  };
+  self.palyerBox.querySelector('.xwH5Player-full').onclick = function () {
+    self.fullScreen();
+  };
+};
 // 播放进度控制
-xwPlayer.prototype.playProgress = function(){
-    var self = this;
-    var xwH5Player = self.xwH5Player;
-    function jumpPlaye(event){
-        event.preventDefault();
-        if(self.DEFAULT.status){
-            return false
-        }
-        var left = event.offsetX / self.palyerBox.clientWidth;
-        left = left <= 0 ? 0 : left >= 1 ? 1 : left;
-        var currentTime = left * xwH5Player.duration;
-        var progress = left * 100;
-        self.xwH5PlayerProgressBar.style.width = progress + '%';
-        xwH5Player.currentTime = currentTime;
+xwPlayer.prototype.playProgress = function () {
+  var self = this;
+  var xwH5Player = self.xwH5Player;
+  function jumpPlaye(event) {
+    event.preventDefault();
+    if (self.DEFAULT.status) {
+      return false;
     }
-    function startBar(event){
-        if(self.DEFAULT.status){
-            return false
-        }
-        event = event.changedTouches ? event.changedTouches[0] : event;
-        self.mouseXY.is = true;
-        self.mouseXY.x = event.clientX;
+    var left = event.offsetX / self.palyerBox.clientWidth;
+    left = left <= 0 ? 0 : left >= 1 ? 1 : left;
+    var currentTime = left * xwH5Player.duration;
+    var progress = left * 100;
+    self.xwH5PlayerProgressBar.style.width = progress + '%';
+    xwH5Player.currentTime = currentTime;
+  }
+  function startBar(event) {
+    if (self.DEFAULT.status) {
+      return false;
     }
-    function moveBar(event){
-        event.preventDefault();
-        if(self.DEFAULT.status){
-            return false
-        }
-        event = event.changedTouches ? event.changedTouches[0] : event;
-        if(self.mouseXY.is){
-            var width = self.xwH5PlayerProgressBar.clientWidth + (event.clientX-self.mouseXY.x);
-            var left = width / self.palyerBox.clientWidth;
-            left = left <= 0 ? 0 : left >= 1 ? 1 : left;
-            var progress = left * 100;
-            self.xwH5PlayerProgressBar.style.width = progress + '%';
-            self.mouseXY.x = event.clientX;
-        }
+    event = event.changedTouches ? event.changedTouches[0] : event;
+    self.mouseXY.is = true;
+    self.mouseXY.x = event.clientX;
+  }
+  function moveBar(event) {
+    event.preventDefault();
+    if (self.DEFAULT.status) {
+      return false;
     }
-    function leaveBox(event){
-        event = event.changedTouches ? event.changedTouches[0] : event;
-        if(self.mouseXY.is && self.mouseXY.x){
-            var width = self.xwH5PlayerProgressBar.clientWidth + (event.clientX-self.mouseXY.x);
-            var left = width / self.palyerBox.clientWidth;
-            left = left <= 0 ? 0 : left >= 1 ? 1 : left;
-            var currentTime = left * xwH5Player.duration;
-            var progress = left * 100;
-            self.xwH5PlayerProgressBar.style.width = progress + '%';
-            xwH5Player.currentTime = currentTime;
-        }
-        self.mouseXY.is = false;
-        self.mouseXY.x = null;
-        self.mouseXY.y = null;
+    event = event.changedTouches ? event.changedTouches[0] : event;
+    if (self.mouseXY.is) {
+      var width = self.xwH5PlayerProgressBar.clientWidth + (event.clientX - self.mouseXY.x);
+      var left = width / self.palyerBox.clientWidth;
+      left = left <= 0 ? 0 : left >= 1 ? 1 : left;
+      var progress = left * 100;
+      self.xwH5PlayerProgressBar.style.width = progress + '%';
+      self.mouseXY.x = event.clientX;
     }
-    self.xwH5PlayerProgress.addEventListener('click',jumpPlaye, false);
-    self.xwH5PlayerProgress.addEventListener('mousedown',startBar, false);
-    self.xwH5PlayerBox.addEventListener('mousemove',moveBar, false);
-    self.xwH5PlayerBox.addEventListener('mouseleave',leaveBox, false);
-    self.xwH5PlayerBox.addEventListener('mouseup',leaveBox, false);
-    self.xwH5PlayerProgress.addEventListener('mouseup',leaveBox, false);
+  }
+  function leaveBox(event) {
+    event = event.changedTouches ? event.changedTouches[0] : event;
+    if (self.mouseXY.is && self.mouseXY.x) {
+      var width = self.xwH5PlayerProgressBar.clientWidth + (event.clientX - self.mouseXY.x);
+      var left = width / self.palyerBox.clientWidth;
+      left = left <= 0 ? 0 : left >= 1 ? 1 : left;
+      var currentTime = left * xwH5Player.duration;
+      var progress = left * 100;
+      self.xwH5PlayerProgressBar.style.width = progress + '%';
+      xwH5Player.currentTime = currentTime;
+    }
+    self.mouseXY.is = false;
+    self.mouseXY.x = null;
+    self.mouseXY.y = null;
+  }
+  self.xwH5PlayerProgress.addEventListener('click', jumpPlaye, false);
+  self.xwH5PlayerProgress.addEventListener('mousedown', startBar, false);
+  self.xwH5PlayerBox.addEventListener('mousemove', moveBar, false);
+  self.xwH5PlayerBox.addEventListener('mouseleave', leaveBox, false);
+  self.xwH5PlayerBox.addEventListener('mouseup', leaveBox, false);
+  self.xwH5PlayerProgress.addEventListener('mouseup', leaveBox, false);
 
-    self.xwH5PlayerBox.addEventListener('touchstart',startBar, false);
-    self.xwH5PlayerBox.addEventListener('touchmove',moveBar, false);
-    self.xwH5PlayerBox.addEventListener('touchend',leaveBox, false);
-}
+  self.xwH5PlayerBox.addEventListener('touchstart', startBar, false);
+  self.xwH5PlayerBox.addEventListener('touchmove', moveBar, false);
+  self.xwH5PlayerBox.addEventListener('touchend', leaveBox, false);
+};
 // 音量
-xwPlayer.prototype.audioProgress = function(){
-    var self = this;
-    var xwH5Player = self.xwH5Player;
-    self.palyerBox.querySelector('.xwH5Player-audio-mute').onclick = function(){
-        xwH5Player.volume = 1
-    }
-    self.palyerBox.querySelector('.xwH5Player-audio-v').onclick = function(){
-        xwH5Player.volume = 0
-    }
-    for(var i = 0; i < 10; i++){
-        self.xwH5PlayerProgressAudioBar[i].onclick = function(){
-            xwH5Player.volume = this.getAttribute('data-v')/100
-        }
-    }
-}
+xwPlayer.prototype.audioProgress = function () {
+  var self = this;
+  var xwH5Player = self.xwH5Player;
+  self.palyerBox.querySelector('.xwH5Player-audio-mute').onclick = function () {
+    xwH5Player.volume = 1;
+  };
+  self.palyerBox.querySelector('.xwH5Player-audio-v').onclick = function () {
+    xwH5Player.volume = 0;
+  };
+  for (var i = 0; i < 10; i++) {
+    self.xwH5PlayerProgressAudioBar[i].onclick = function () {
+      xwH5Player.volume = this.getAttribute('data-v') / 100;
+    };
+  }
+};
 // 声音动画
-xwPlayer.prototype.audioAnimation = function(){
-    var self = this;
-    var audio = self.xwH5Player;
-    var canvas = self.xwH5PlayerCanvas;
-    var xwH5PlayerBox = self.xwH5PlayerBox;
-    var p = xwH5PlayerBox.clientWidth*3 / 640;
-    if(self.AudioContext){
-        return false;
+xwPlayer.prototype.audioAnimation = function () {
+  var self = this;
+  var audio = self.xwH5Player;
+  var canvas = self.xwH5PlayerCanvas;
+  var xwH5PlayerBox = self.xwH5PlayerBox;
+  var p = (xwH5PlayerBox.clientWidth * 3) / 640;
+  if (self.AudioContext) {
+    return false;
+  }
+  var atx = new AudioContext();
+  self.AudioContext = atx;
+  var analyser = atx.createAnalyser();
+  var audioSrc = atx.createMediaElementSource(audio);
+  // we have to connect the MediaElementSource with the analyser
+  audioSrc.connect(analyser);
+  analyser.connect(atx.destination);
+  // we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
+  // analyser.fftSize = 64;
+  // frequencyBinCount tells you how many valueschangePlayer you'll receive from the analyser
+  // var frequencyData = new Uint8Array(analyser.frequencyBinCount);
+  // we're ready to receive some data!
+  var meterNum = 30; //count of the meters
+  var meterWidth = parseInt((xwH5PlayerBox.clientWidth * 3) / meterNum); //width of the meters in the spectrum
+  var gap = parseInt(2 * p); //gap between meters
+  var cwidth = xwH5PlayerBox.clientWidth * 3;
+  var cheight = xwH5PlayerBox.clientHeight * 3 - 2;
+  var capHeight = 2;
+  var capStyle = '#fff';
+  var capYPositionArray = []; ////store the vertical position of hte caps for the preivous frame
+  var ctx = canvas.getContext('2d');
+  var gradient = ctx.createLinearGradient(0, 0, 0, cheight);
+  canvas.width = cwidth;
+  canvas.height = cheight + 2;
+  gradient.addColorStop(1, '#60274D');
+  gradient.addColorStop(0.5, '#4D883A');
+  gradient.addColorStop(0, '#39371D');
+  // loop
+  function renderFrame() {
+    var array = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(array);
+    var step = Math.round(array.length / (meterNum * 2)); //sample limited data from the total array
+    ctx.clearRect(0, 0, cwidth, cheight);
+    for (var i = 0; i < meterNum; i++) {
+      var value = array[i * step] * p;
+      if (capYPositionArray.length < Math.round(meterNum)) {
+        capYPositionArray.push(value);
+      }
+      ctx.fillStyle = capStyle;
+      //draw the cap, with transition effect
+      if (value < capYPositionArray[i]) {
+        ctx.fillRect(
+          i * (meterWidth + gap),
+          cheight - --capYPositionArray[i],
+          meterWidth,
+          capHeight
+        );
+      } else {
+        ctx.fillRect(i * (meterWidth + gap), cheight - value, meterWidth, capHeight);
+        capYPositionArray[i] = value;
+      }
+      ctx.fillStyle = gradient; //set the filllStyle to gradient for a better look
+      ctx.fillRect(
+        i * (meterWidth + gap) /*meterWidth+gap*/,
+        cheight - value + capHeight,
+        meterWidth,
+        cheight
+      ); //the meter
     }
-    var atx = new AudioContext();
-    self.AudioContext = atx;
-    var analyser = atx.createAnalyser();
-    var audioSrc = atx.createMediaElementSource(audio);
-    // we have to connect the MediaElementSource with the analyser
-    audioSrc.connect(analyser);
-    analyser.connect(atx.destination);
-    // we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
-    // analyser.fftSize = 64;
-    // frequencyBinCount tells you how many valueschangePlayer you'll receive from the analyser
-    // var frequencyData = new Uint8Array(analyser.frequencyBinCount);
-    // we're ready to receive some data!
-    var meterNum = 30; //count of the meters
-    var meterWidth = parseInt(xwH5PlayerBox.clientWidth*3 / meterNum); //width of the meters in the spectrum
-    var gap = parseInt(2 * p); //gap between meters
-    var cwidth = xwH5PlayerBox.clientWidth*3;
-    var cheight = xwH5PlayerBox.clientHeight*3 - 2;
-    var capHeight = 2;
-    var capStyle = '#fff';
-    var capYPositionArray = []; ////store the vertical position of hte caps for the preivous frame
-    var ctx = canvas.getContext('2d');
-    var gradient = ctx.createLinearGradient(0, 0, 0, cheight);
-    canvas.width = cwidth;
-    canvas.height = cheight+2;
-    gradient.addColorStop(1, '#60274D');
-    gradient.addColorStop(0.5, '#4D883A');
-    gradient.addColorStop(0, '#39371D');
-    // loop
-    function renderFrame(){
-        var array = new Uint8Array(analyser.frequencyBinCount);
-        analyser.getByteFrequencyData(array);
-        var step = Math.round(array.length / (meterNum*2)); //sample limited data from the total array
-        ctx.clearRect(0, 0, cwidth, cheight);
-        for (var i = 0; i < meterNum; i++) {
-            var value = array[i * step]  * p;
-            if (capYPositionArray.length < Math.round(meterNum)) {
-                capYPositionArray.push(value);
-            }
-            ctx.fillStyle = capStyle;
-            //draw the cap, with transition effect
-            if (value < capYPositionArray[i]) {
-                ctx.fillRect(i * (meterWidth + gap), cheight - (--capYPositionArray[i]), meterWidth, capHeight);
-            } else {
-                ctx.fillRect(i * (meterWidth + gap), cheight - value, meterWidth, capHeight);
-                capYPositionArray[i] = value;
-            }
-            ctx.fillStyle = gradient; //set the filllStyle to gradient for a better look
-            ctx.fillRect(i * (meterWidth + gap) /*meterWidth+gap*/ , cheight - value + capHeight, meterWidth, cheight); //the meter
-        }
-        requestAnimationFrame(renderFrame);
-    }
-    renderFrame();
-}
+    requestAnimationFrame(renderFrame);
+  }
+  renderFrame();
+};
 export default xwPlayer;
